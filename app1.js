@@ -29,9 +29,8 @@ Router.route('/', function() {
 }) ;
 
 Router.route('/hello', function() {
-  // NOT WORKING
-  this.response.end('hello from the client\n');
-}) ;
+  this.response.end('hello from the server!\n');
+},{where:'server'}) ;
 
 Router.route('/tickets', function() {
   this.render('Tickets');
