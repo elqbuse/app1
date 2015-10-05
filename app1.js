@@ -1,5 +1,22 @@
-// Tickets = new Mongo.Collection('tickets');
+Tickets = new Mongo.Collection('tickets');
 
+if (Meteor.isServer) {
+  Meteor.startup(function(){
+    if (Tickets.find().count() === 0) {
+      _.each(_.range(1000,2000), function(t){
+        Tickets.insert({title: "Ticket #" + t});
+      })
+    }
+  })
+
+  Meteor.publish("allTickets", function () {
+    return Tickets.find(); // insecure!
+  });
+}
+
+if (Meteor.isClient) {
+  Meteor.subscribe('allTickets') ;
+}
 /*
 Router.route('/', function () {
   this.render('Home', {
@@ -32,13 +49,21 @@ Router.route('/hello', function() {
   this.response.end('hello from the server!\n');
 },{where:'server'}) ;
 
-Router.route('/tickets', function() {
-  this.render('Tickets');
+Router.route('/tickets') ;
+
+Router.route('/thelist', {
+  template:'tickets'
 }) ;
 
+Router.route('abc', {
+  path     : '/mylist',
+  template : 'tickets'
+}) ;
 
-/*
-Router.route('/tickets', function () {
-  this.render('tickets');
-});
-*/
+if (Meteor.isClient) {
+  Template.tickets.helpers({
+    allTickets: function () {
+      return Tickets.find({}, {sort:{title:1}}) ;
+    }
+  });
+}
