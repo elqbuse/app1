@@ -14,32 +14,11 @@ if (Meteor.isServer) {
   });
 }
 
-if (Meteor.isClient) {
-  Meteor.subscribe('allTickets') ;
-}
-/*
-Router.route('/', function () {
-  this.render('Home', {
-    data: function () { return Items.findOne({_id: this.params._id}); }
-  });
-});
-*/
-
-/*
-Router.configure({
-  layoutTemplate: 'layout'
-});
-*/
-
 Router.configure({
   layoutTemplate:   'ApplicationLayout',
   notFoundTemplate: '404'
   // layoutTemplate: 'layout'
 });
-
-// Router.route('/') ;        // allows "/" route - default <body>
-
-// Router.route('/tickets') ; // auto-load: <template name="tickets">
 
 Router.route('/', function() {
   this.redirect('/tickets');
@@ -60,10 +39,26 @@ Router.route('abc', {
   template : 'tickets'
 }) ;
 
+
 if (Meteor.isClient) {
+
+  var qqqq = Meteor.subscribe('allTickets') ;
+
+  Template.tickets.onCreated(function(){
+    Session.set('orden', -1) ;
+  });
+  
   Template.tickets.helpers({
     allTickets: function () {
-      return Tickets.find({}, {sort:{title:1}}) ;
+      if(!qqqq.ready()) { console.log('loading...') ; return [] ; }
+      console.log('local query!') ; 
+      return Tickets.find({}, {sort:{title:Session.get('orden')}, limit:10}) ;
+    }
+  });
+  
+  Template.tickets.events({
+    'click .orden': function(event, template) {
+      Session.set('orden', (-1) * Session.get('orden')) ;
     }
   });
 }
