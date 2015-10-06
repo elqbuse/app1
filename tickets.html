@@ -1,10 +1,29 @@
 <template name="tickets">
   <h2>Lista de items</h2>
-  <button class="orden">Orden</button>
-  <ul>
-  {{#each allTickets}}
-    <li>{{title}}</li>
+  <button type="button" class="btn btn-xs btn-primary orden">Orden</button>
+
+  <div class="list-group" style="height:450px ; overflow-y:auto">
+  {{#each allTicketsCursor}}
+    <button type="button" class="list-group-item">
+      {{title}}
+    </button>
   {{/each}}
-  </ul>
+  </div>
+
+  <hr>
+
+  <table class="table table-hover table-condensed"><thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+    </tr>
+  </thead><tbody>
+  {{#each allTicketsCursor}}
+    <tr>
+      <td>{{_id}}</td>
+      <td>{{title}}</td>
+    </tr>
+  {{/each}}
+  </tbody></table>
 
 </template>
