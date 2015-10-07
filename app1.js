@@ -65,5 +65,11 @@ if (Meteor.isClient) {
       return Tickets.findOne({_id:currentId}) ;
     }
   });
-  
+
+  Template.ticket.events({
+    'keyup input[type=text]' : function(event, template){
+      alert(event.currentTarget.value);
+    }
+  })
+
 }

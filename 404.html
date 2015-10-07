@@ -1,3 +1,27 @@
 <template name="404">
+
   <h1>Invalid route</h1>
+
+
+
+
+
+  <hr>
+  <p>ok, we enjoy reactivity anyways...</p>
+
+  <!-- CHALLENGE:  this is the Angular code to mimic:
+     <input data-ng-model='synchronizeThis'/><span>{{synchronizeThis}}</span>
+  -->
+
+  <input class="syncrhonize" value="{{qqq}}"/><span>{{qqq}}</span>
+
+  <!-- dirty inline script, could be easily packaged.   I guess. -->
+  <!-- DOESN'T work ////  MUST be package -->
+  <script>
+    Template['404'].events({
+      'blur .syncrhonize' : function(event, template){
+        alert(event.currentTarget.value);
+      }
+    });
+  </script>
 </template>
