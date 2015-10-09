@@ -62,14 +62,57 @@ if (Meteor.isClient) {
       // reutilizamos la suscripción "allTickets"
       if(!qqqq.ready()) { console.log('loading...') ; return [] ; }
       var currentId= Router.current().getParams().id;
-      return Tickets.findOne({_id:currentId}) ;
+      var t = Tickets.findOne({_id:currentId}) ;
+      t.status="C";  // HACK
+      return t ;
+    },
+    statusOptions: function () {
+      return {"U":"Undef'd", "O":"Open & active", "C":"<"+'"'+"Closed"+'"'+">"};
     }
   });
 
   Template.ticket.events({
+    'click .js-submit' : function(event, template){
+      var data = {} ;
+      var form = $(event.target).closest('form') ;
+      // alert(template.$('input[name=_id]');
+      alert(form.attr('class')) ;
+      form.find('input,select,textarea').each(function(){
+        ctl = $(this) ;
+        alert(ctl.attr('name'));
+        data[ctl.attr('name')] = ctl.val() ;
+      });
+      alert(JSON.stringify(data));
+    },
     'keyup input[type=text]' : function(event, template){
       alert(event.currentTarget.value);
     }
   })
+
+  
+  Template.registerHelper('selectValue', function(v) {
+    console.log(this+"=="+v) ;
+    s = (""+this)==v ;
+    console.log(s) ;
+    if (s) return {selected:'selected', value:v, label:"o="+v, title:v} ;
+    return {value:v, label:"o="+v, title:v} ;
+  });
+
+  Template.registerHelper('HTML_OPTIONS', function(options_map, selected) {
+  //
+  // TODO: 1. Support label-less (value only) for input>datalist components
+  //       2. Support multiple selection
+  
+    var markup = "" ;
+    _.each(_.keys(options_map), function(value){
+      markup = markup
+             + '<option value="' 
+             +   _.escape(value) 
+             +   (selected && selected==value ? '" selected>' : '">')
+             +   _.escape(options_map[value])
+             + '</option>' ;
+    });
+    return Spacebars.SafeString(markup) ;
+  });
 
 }

@@ -18,7 +18,6 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 # iron:router@0.9.4     # ye olde, reliable router for meteor 0.9.x
 
 iron:router@1.0.9
-ejson                   # required for iron:router 1.0.9 (bug?)
 
 # mobile-experience
 # insecure

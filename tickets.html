@@ -22,12 +22,34 @@
 
 </template>
 
-<template name="ticket">
-<p><a href="/tickets">tickets</a></p>
+<template name="ticket" status="C">
+  <p><a href="/tickets">tickets</a></p>
+
   {{#with currentTicket}}
-  <form>
-    <label>ID <input type="text" value="{{_id}}"></label>
-    <label>Title <input type="text" value="{{title}}"></label>
+  <form class="js-ticket">
+
+  <label>ID <input type="text" name="_id" value="{{_id}}"></label>
+    
+    <label>Title <input type="text" name="title" value="{{title}}"></label>
+    
+    <label>Status
+      <select name="status">
+        <option value="">--Please select--</option>
+        {{HTML_OPTIONS statusOptions "O"}}
+      </select>
+    </label>
+    {{! HTMLselect "status" statusOptions}}
+    <button type="button" class="btn btn-xs btn-primary js-submit">Guardar</button>
+
+    <label>
+      Sex:
+      <input name=gender list=genders>
+      <datalist id=genders>
+        {{HTML_OPTIONS statusOptions}}
+      </datalist>
+    </label>
+    
   </form>
   {{/with}}
 </template>
+
