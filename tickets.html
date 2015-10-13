@@ -22,7 +22,7 @@
 
 </template>
 
-<template name="ticket" status="C">
+<template name="ticket">
   <p><a href="/tickets">tickets</a></p>
 
   {{#with currentTicket}}
@@ -35,7 +35,7 @@
     <label>Status
       <select name="status">
         <option value="">--Please select--</option>
-        {{HTML_OPTIONS statusOptions "O"}}
+        {{HTML_OPTIONS statusOptions status}}
       </select>
     </label>
     {{! HTMLselect "status" statusOptions}}
@@ -52,4 +52,21 @@
   </form>
   {{/with}}
 </template>
+
+
+<template name="formtest">
+  <a href="/tickets">&lt;&lt; tickets</a>
+  <hr>
+  ID:{{_id}}
+  <input type="text" data-bind="value:title">
+  <select            data-bind="value:status, options:ticketStatusOptions"></select>
+  <button>Save</button>
+  <hr>
+  Title=<span data-bind="text:title"></span> // Status=<span data-bind="text:status"></span>
+  <hr>
+  Title=<input type="text" data-bind="value: title"> // Status=<input type="text" data-bind="value:status">
+  <hr>
+  Title="{{title}}" // Status="{{status}}"
+</template>
+
 

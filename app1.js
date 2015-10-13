@@ -6,7 +6,7 @@ if (Meteor.isServer) {
     // devel DB dummy content
     if (Tickets.find().count() === 0) {
       _.each(_.range(1000,2000), function(t){
-        Tickets.insert({_id: ""+t, title: "Ticket #" + t});
+        Tickets.insert({_id: ""+t, title: "Ticket #" + t, status:(t<1990?"C":"O")});
       })
     }
   })
@@ -53,7 +53,7 @@ if (Meteor.isClient) {
       Session.set('orden', (-1) * Session.get('orden')) ;
     },
     'click .js-ticket': function(event, template) {
-      Router.go('/ticket/'+event.currentTarget.id) ;
+      Router.go('/formtest/'+event.currentTarget.id) ;
     }
   });
 
@@ -63,7 +63,6 @@ if (Meteor.isClient) {
       if(!qqqq.ready()) { console.log('loading...') ; return [] ; }
       var currentId= Router.current().getParams().id;
       var t = Tickets.findOne({_id:currentId}) ;
-      t.status="C";  // HACK
       return t ;
     },
     statusOptions: function () {
@@ -115,4 +114,112 @@ if (Meteor.isClient) {
     return Spacebars.SafeString(markup) ;
   });
 
-}
+  Template.formtest.viewmodel({
+    // doc: {
+    //   title: 'doc{title}',
+    //   status: '',},
+    // "doc.title": 'doc.title',
+    // "doc.status": '',
+    // ticketStatusOptions: function(){
+    //   return ["C", "O", "U"] ;
+    ticketStatusOptions: ["U", "O", "C"],
+  });
+  
+  Router.route('/formtest/:_id', {
+    // name: 'post.show',     // for lookups: Route[..] / deflt. template / Router.go(..)
+    // path: '/post/:_id',    // legacy - use parameter above instead
+    // controller: 'CustomController',  // for lookup  (deflt: anonymous)
+
+    template: 'formtest',               // dflt:  route name
+    // layoutTemplate: 'appLayout',     // dflt:  Route global -- see yieldRegions below
+    // loadingTemplate: 'loading',      // dflt:  Route global -- see waitOn below
+
+    // yieldRegions: {
+    //   'MyAside': {to: 'aside'},
+    //   'MyFooter': {to: 'footer'}
+    // },
+
+    // regular subscriptions
+    // subscriptions: function() {
+    //   this.subscribe('items');                           // regular, NO-wait
+    //   this.subscribe('item', this.params._id).wait();    // waitlisted ( affects ready() )
+    // },
+
+    // automatic: only waitlisted subscriptions + "loading" hook
+    //   return one handle, a function, or an array
+    waitOn: function () {
+      return [ 
+        Meteor.subscribe('allTickets'),    // UGLY, should optimize
+      ];
+    },
+
+    // data context for our _layout_
+    data: function () {
+      return Tickets.findOne({_id: this.params._id}) ;
+    },
+
+    // You can provide any of the hook options described below in the "Using Hooks" section.
+    // onRun: function () {},
+    // onRerun: function () {},
+    // onBeforeAction: function () {},
+    // onAfterAction: function () {},
+    // onStop: function () {},
+
+    // The same thing as providing a function as the second parameter.
+    //   function OR string (controller name)
+    //   optional -- deflt:  render its template, layout and regions
+    // action: function () {
+    //   this.render();       // render all templates and regions for this route
+    // }
+  });
+
+
+  
+  /*
+  Template.XXXXX.onCreated(function(){
+    // only once
+    // USE: set default state, get resources
+    // Template.instance()  -- current template instance
+    // Template.instance().data -- read-only and non-reactive.
+    // Template.instance().data -- read-only and non-reactive.
+  });
+
+  Template.XXXXX.onRendered(function(){
+    // only once, first insertion on the DOM
+    // USE: perform custom DOM manipulations / adjustments
+    // Template.instance()  -- current template instance
+  });
+
+  Template.XXXXX.onDestroyed(function(){
+    // only once - removal from the DOM, without re-insertion
+    // USE: cleanup state, release resources
+    // Template.instance()  -- current template instance
+  });
+
+  Template.XXXXX.events({
+    //
+    'EVENT ELEMENT_QUERY': function(event, template) {
+      // event   ( documented at Event Maps.)
+      // template == .....
+      // this == data-context of target/trigger element
+    },
+  });
+
+  Template.XXXXX.helpers({
+    //
+    'HELPER_NAME': function() {
+      // this == data-context  (affected by #each and #with)
+      // Template.instance()  -- current template instance
+    },
+  });
+
+  */
+  
+  
+  
+
+
+
+
+} // endif (Meteor.isClient)
+
