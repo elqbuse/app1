@@ -15,14 +15,14 @@ standard-minifiers      # JS/CSS minifiers run for production mode
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
-# iron:router@0.9.4     # ye olde, reliable router for meteor 0.9.x
-
-iron:router@1.0.9
-
 # mobile-experience
 # insecure
 # less
 # accounts-password
 # check
+
+# iron:router@0.9.4     # ye olde, reliable router for meteor 0.9.x
+iron:router@1.0.9
 twbs:bootstrap
 manuel:viewmodel
+manuel:viewmodel-explorer  # development-only  (Ctrl-Shift-E)

@@ -1,7 +1,20 @@
 Tickets = new Mongo.Collection('tickets');
 
-if (Meteor.isServer) {
+Tickets.allow({
+  insert: function (userId, document) {
+    return true;
+  },
+  update: function (userId, document) {
+    return true;
+  },
+  remove: function (userId, document) {
+    return false;
+  }
+});
 
+// ============================================================================
+
+if (Meteor.isServer) {
   Meteor.startup(function(){
     // devel DB dummy content
     if (Tickets.find().count() === 0) {
@@ -18,113 +31,20 @@ if (Meteor.isServer) {
 
 Router.configure({
   layoutTemplate:   'ApplicationLayout',
-  notFoundTemplate: '404'
+  loadingTemplate: 'Loading',
+  notFoundTemplate: 'PageNotFound'
 });
 
 Router.route('/', function() {
   this.redirect('/tickets');
 }) ;
 
-Router.route('/tickets') ;
 
-Router.route('/ticket/:id', {
-  template:'ticket'
-}) ;
+  /* ----------------------------------------- */
+  /* EXAMPLES ONLY                             */
+  /* ----------------------------------------- */
 
-
-if (Meteor.isClient) {
-
-  var qqqq = Meteor.subscribe('allTickets') ;
-
-  Template.tickets.onCreated(function(){
-    Session.setDefault('orden', -1) ;
-  });
-
-  Template.tickets.helpers({
-    allTicketsCursor: function () {
-      if(!qqqq.ready()) { console.log('loading...') ; return [] ; }
-      console.log('local query...') ;
-      return Tickets.find({},{sort:{title:Session.get('orden')}, limit:10}) ;
-    }
-  });
-
-  Template.tickets.events({
-    'click .js-orden': function(event, template) {
-      Session.set('orden', (-1) * Session.get('orden')) ;
-    },
-    'click .js-ticket': function(event, template) {
-      Router.go('/formtest/'+event.currentTarget.id) ;
-    }
-  });
-
-  Template.ticket.helpers({
-    currentTicket: function () {
-      // reutilizamos la suscripción "allTickets"
-      if(!qqqq.ready()) { console.log('loading...') ; return [] ; }
-      var currentId= Router.current().getParams().id;
-      var t = Tickets.findOne({_id:currentId}) ;
-      return t ;
-    },
-    statusOptions: function () {
-      return {"U":"Undef'd", "O":"Open & active", "C":"<"+'"'+"Closed"+'"'+">"};
-    }
-  });
-
-  Template.ticket.events({
-    'click .js-submit' : function(event, template){
-      var data = {} ;
-      var form = $(event.target).closest('form') ;
-      // alert(template.$('input[name=_id]');
-      alert(form.attr('class')) ;
-      form.find('input,select,textarea').each(function(){
-        ctl = $(this) ;
-        alert(ctl.attr('name'));
-        data[ctl.attr('name')] = ctl.val() ;
-      });
-      alert(JSON.stringify(data));
-    },
-    'keyup input[type=text]' : function(event, template){
-      alert(event.currentTarget.value);
-    }
-  })
-
-  
-  Template.registerHelper('selectValue', function(v) {
-    console.log(this+"=="+v) ;
-    s = (""+this)==v ;
-    console.log(s) ;
-    if (s) return {selected:'selected', value:v, label:"o="+v, title:v} ;
-    return {value:v, label:"o="+v, title:v} ;
-  });
-
-  Template.registerHelper('HTML_OPTIONS', function(options_map, selected) {
-  //
-  // TODO: 1. Support label-less (value only) for input>datalist components
-  //       2. Support multiple selection
-  
-    var markup = "" ;
-    _.each(_.keys(options_map), function(value){
-      markup = markup
-             + '<option value="' 
-             +   _.escape(value) 
-             +   (selected && selected==value ? '" selected>' : '">')
-             +   _.escape(options_map[value])
-             + '</option>' ;
-    });
-    return Spacebars.SafeString(markup) ;
-  });
-
-  Template.formtest.viewmodel({
-    // doc: {
-    //   title: 'doc{title}',
-    //   status: '',},
-    // "doc.title": 'doc.title',
-    // "doc.status": '',
-    // ticketStatusOptions: function(){
-    //   return ["C", "O", "U"] ;
-    ticketStatusOptions: ["U", "O", "C"],
-  });
-  
+  /*
   Router.route('/formtest/:_id', {
     // name: 'post.show',     // for lookups: Route[..] / deflt. template / Router.go(..)
     // path: '/post/:_id',    // legacy - use parameter above instead
@@ -148,7 +68,7 @@ if (Meteor.isClient) {
     // automatic: only waitlisted subscriptions + "loading" hook
     //   return one handle, a function, or an array
     waitOn: function () {
-      return [ 
+      return [
         Meteor.subscribe('allTickets'),    // UGLY, should optimize
       ];
     },
@@ -172,9 +92,9 @@ if (Meteor.isClient) {
     //   this.render();       // render all templates and regions for this route
     // }
   });
+  */
 
 
-  
   /*
   Template.XXXXX.onCreated(function(){
     // only once
@@ -214,12 +134,3 @@ if (Meteor.isClient) {
   });
 
   */
-  
-  
-  
-
-
-
-
-} // endif (Meteor.isClient)
-

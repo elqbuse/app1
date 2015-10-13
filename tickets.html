@@ -1,6 +1,9 @@
+
 <template name="tickets">
   <h2>Lista de items</h2>
-  <button type="button" class="btn btn-xs btn-primary js-orden">Orden</button>
+  <hr>
+  <button type="button" class="btn btn-xs btn-primary"
+          data-bind="click:evt_changeOrder">Orden</button>
 
   <table class="table table-hover table-condensed"><thead>
     <tr>
@@ -10,63 +13,43 @@
       <th>Date</th>
     </tr>
   </thead><tbody>
-  {{#each allTicketsCursor}}
-    <tr id="{{_id}}" class="js-ticket">
-      <td>{{_id}}</td>
-      <td>{{title}} xx x xx blah blah foo bar baz ...</td>
-      <td title="Juan Abelardo Perez Barbosa">jperez</td>
-      <td>2015-01-01</td>
-    </tr>
+  {{#each rs_allTickets}}
+    {{> tickets_row}}
   {{/each}}
   </tbody></table>
-
 </template>
+
+<template name="tickets_row">
+  <tr id="{{_id}}" data-bind="click:evt_ticketSelect">
+    <td>{{_id}}</td>
+    <td>{{title}} xx x xx blah blah foo bar baz ...</td>
+    <td title="Juan Abelardo Perez Barbosa">jperez</td>
+    <td>2015-01-01</td>
+  </tr>
+</template>
+
+<!-- ====================================================================== -->
 
 <template name="ticket">
-  <p><a href="/tickets">tickets</a></p>
-
-  {{#with currentTicket}}
-  <form class="js-ticket">
-
-  <label>ID <input type="text" name="_id" value="{{_id}}"></label>
-    
-    <label>Title <input type="text" name="title" value="{{title}}"></label>
-    
-    <label>Status
-      <select name="status">
-        <option value="">--Please select--</option>
-        {{HTML_OPTIONS statusOptions status}}
-      </select>
-    </label>
-    {{! HTMLselect "status" statusOptions}}
-    <button type="button" class="btn btn-xs btn-primary js-submit">Guardar</button>
-
-    <label>
-      Sex:
-      <input name=gender list=genders>
-      <datalist id=genders>
-        {{HTML_OPTIONS statusOptions}}
-      </datalist>
-    </label>
-    
-  </form>
-  {{/with}}
-</template>
-
-
-<template name="formtest">
   <a href="/tickets">&lt;&lt; tickets</a>
+  <h2>ID:<span data-bind="text:_id"></span></h2>
   <hr>
-  ID:{{_id}}
-  <input type="text" data-bind="value:title">
-  <select            data-bind="value:status, options:ticketStatusOptions"></select>
-  <button>Save</button>
-  <hr>
-  Title=<span data-bind="text:title"></span> // Status=<span data-bind="text:status"></span>
-  <hr>
-  Title=<input type="text" data-bind="value: title"> // Status=<input type="text" data-bind="value:status">
-  <hr>
-  Title="{{title}}" // Status="{{status}}"
+  <form>
+    <div class="form-group">
+      <label>Title
+        <input type="text" class="form-control"
+               data-bind="value:title">
+      </label>
+    </div>
+    <div class="form-group">
+      <label>Status
+        <select class="form-control"
+                data-bind="value:status,
+                            optionsText:label,
+                            optionsValue:_id,
+                            options:opt_ticketStatus"></select>
+      </label>
+    </div>
+    <input type="button" data-bind="click:evt_Save" value="Save">
+  </form>
 </template>
-
-
