@@ -15,7 +15,7 @@
   <![endif]-->
 </head>
 
-<template name="ApplicationLayout">
+<template name="AppLayout">
   <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
@@ -53,18 +53,14 @@
   <p><a href="/missing">missing</a></p>
 
   <div class="container">
-    <div>
-      <hr>
       {{> yield}}
-      <hr>
-    </div>
   </div>
 </template>
 
-<template name="PageNotFound">
+<template name="AppPageNotFound">
   <h1>Invalid route</h1>
 </template>
 
-<template name="Loading">
-  <h1>Cargando...   :)</h1>
+<template name="AppLoading">
+  <img class="center-block" src="/icon/loading-big.gif">
 </template>

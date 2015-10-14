@@ -2,13 +2,11 @@
 <template name="tickets">
   <h2>Lista de items</h2>
   <hr>
-  <button type="button" class="btn btn-xs btn-primary"
-          data-bind="click:evt_changeOrder">Orden</button>
-
   <table class="table table-hover table-condensed"><thead>
     <tr>
       <th>#</th>
-      <th>Title</th>
+      <th data-bind="click:evt_changeOrder">
+          Title ▲▼</th>
       <th>User</th>
       <th>Date</th>
     </tr>
@@ -20,9 +18,9 @@
 </template>
 
 <template name="tickets_row">
-  <tr id="{{_id}}" data-bind="click:evt_ticketSelect">
-    <td>{{_id}}</td>
-    <td>{{title}} xx x xx blah blah foo bar baz ...</td>
+  <tr data-bind="click:evt_ticketSelect">
+    <td data-bind="text:_id"></td>
+    <td data-bind="text:title"></td>
     <td title="Juan Abelardo Perez Barbosa">jperez</td>
     <td>2015-01-01</td>
   </tr>
@@ -34,22 +32,20 @@
   <a href="/tickets">&lt;&lt; tickets</a>
   <h2>ID:<span data-bind="text:_id"></span></h2>
   <hr>
-  <form>
-    <div class="form-group">
-      <label>Title
-        <input type="text" class="form-control"
-               data-bind="value:title">
-      </label>
-    </div>
-    <div class="form-group">
-      <label>Status
-        <select class="form-control"
-                data-bind="value:status,
-                            optionsText:label,
-                            optionsValue:_id,
-                            options:opt_ticketStatus"></select>
-      </label>
-    </div>
-    <input type="button" data-bind="click:evt_Save" value="Save">
-  </form>
+  <div class="form-group">
+    <label>Title
+      <input type="text" class="form-control"
+             data-bind="value:title">
+    </label>
+  </div>
+  <div class="form-group">
+    <label>Status
+      <select class="form-control"
+              data-bind="value:status,
+                          optionsText:label,
+                          optionsValue:_id,
+                          options:opt_ticketStatus"></select>
+    </label>
+  </div>
+  <input type="button" data-bind="click:evt_Save" value="Save">
 </template>

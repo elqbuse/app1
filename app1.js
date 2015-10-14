@@ -30,9 +30,9 @@ if (Meteor.isServer) {
 }
 
 Router.configure({
-  layoutTemplate:   'ApplicationLayout',
-  loadingTemplate: 'Loading',
-  notFoundTemplate: 'PageNotFound'
+  layoutTemplate:   'AppLayout',
+  notFoundTemplate: 'AppPageNotFound',
+  loadingTemplate:  'AppLoading'
 });
 
 Router.route('/', function() {

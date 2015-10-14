@@ -9,7 +9,7 @@ Router.route('/tickets', {
 Router.route('/ticket/:_id', {
   template: 'ticket',
   waitOn: function () {
-    return Meteor.subscribe('allTickets') ;   // UGLY, should optimize
+    return Meteor.subscribe('allTickets') ;   // UGLY, should optimize?
   }
 });
 
@@ -23,21 +23,20 @@ if (Meteor.isClient) {
     // viewstate properties
     {
       row_order: -1,
+      evt_changeOrder: function(event) {
+        this.row_order( -this.row_order() ) ;
+      },
       rs_allTickets: function () {
         return Tickets.find({},{sort:{title:this.row_order()}, limit:10}) ;
       },
-      evt_changeOrder: function(event) {
-        this.row_order(-this.row_order()) ;
-      },
     },
-    // exported helpers
-    [ "rs_allTickets" ]
+    [ "rs_allTickets" ]  // exported helpers
   );
 
   Template.tickets_row.viewmodel({
-    evt_ticketSelect: function(event) {
-      Router.go('/ticket/'+event.currentTarget.id) ;
-    }
+      evt_ticketSelect: function(event) {
+        Router.go("/ticket/"+this._id()) ;
+      }
   });
 
 // ============================================================================
