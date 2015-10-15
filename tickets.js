@@ -27,7 +27,7 @@ if (Meteor.isClient) {
         this.row_order( -this.row_order() ) ;
       },
       rs_allTickets: function () {
-        return Tickets.find({},{sort:{title:this.row_order()}, limit:10}) ;
+        return Tickets.find({},{sort:{title:this.row_order()}, limit:10, reactive:false}).fetch() ;
       },
     },
     [ "rs_allTickets" ]  // exported helpers
