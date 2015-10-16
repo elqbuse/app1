@@ -1,0 +1,48 @@
+
+<template name="personas">
+  <h2>Personas - [<span data-bind="text:page"></span>]</h2>
+  <hr>
+  <input type="button" value="&lt;" data-bind="click:evt_prevPage">
+  <input type="button" value="&gt;" data-bind="click:evt_nextPage">
+  <table class="table table-hover table-condensed"><thead>
+    <tr>
+      <th>Last</th>
+      <th>First</th>
+    </tr>
+  </thead><tbody>
+  {{#each rs_gridPersonas}}
+    {{> personas_row}}
+  {{/each}}
+  </tbody></table>
+</template>
+
+<template name="personas_row">
+  <tr>
+    <td data-bind="text:last"></td>
+    <td data-bind="text:first"></td>
+  </tr>
+</template>
+
+<!-- ====================================================================== -->
+
+<template name="persona">
+  <a href="/tickets">&lt;&lt; personas</a>
+  <h2>ID:<span data-bind="text:_id"></span></h2>
+  <hr>
+  <div class="form-group">
+    <label>Title
+      <input type="text" class="form-control"
+             data-bind="value:title">
+    </label>
+  </div>
+  <div class="form-group">
+    <label>Status
+      <select class="form-control"
+              data-bind="value:status,
+                          optionsText:label,
+                          optionsValue:_id,
+                          options:opt_ticketStatus"></select>
+    </label>
+  </div>
+  <input type="button" data-bind="click:evt_Save" value="Save">
+</template>

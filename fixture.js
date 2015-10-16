@@ -1,7 +1,4 @@
 
-
-Personas = new Mongo.Collection('personas');
-
 if (Meteor.isServer) {
   Meteor.startup(function(){
     if (Personas.find().count() === 0) {

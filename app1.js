@@ -1,5 +1,7 @@
 Tickets = new Mongo.Collection('tickets');
 
+Personas = new Mongo.Collection('personas');
+
 Tickets.allow({
   insert: function (userId, document) {
     return true;
@@ -27,6 +29,23 @@ if (Meteor.isServer) {
   Meteor.publish("allTickets", function () {
     return Tickets.find(); // insecure!
   });
+  
+  Meteor.publish("allPersonas", function () {
+    return Personas.find(); // insecure!
+  });
+  
+  Meteor.methods({
+    pagedPersonas: function(page) {
+        console.log("pagedPersonas("+page+") called from client.") ;
+        var pp = Personas.find({},{
+                  skip    : 10*(page-1),
+                  limit   : 10,
+                  sort    : {last:1, first:1}, 
+               }).fetch() ;
+        console.log("returning "+pp.length+" documents.") ;
+        return pp ;
+    }
+  }) ;
 }
 
 Router.configure({
