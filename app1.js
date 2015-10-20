@@ -29,27 +29,60 @@ if (Meteor.isServer) {
   Meteor.publish("allTickets", function () {
     return Tickets.find(); // insecure!
   });
-  
+
   Meteor.publish("allPersonas", function () {
     return Personas.find(); // insecure!
   });
-  
+
   Meteor.publish("gridPersonas", function (page) {
     return Personas.find({$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},{
                   fields  : {'last':1},
-                  skip    : 15*(page-1),
-                  limit   : 15,
-                  sort    : {last:1, first:1}, 
+                  skip    : 10*(page-1),
+                  limit   : 10,
+                  sort    : {last:1, first:1},
                });
   });
-  
+
+  Meteor.publish("gridPersonas2", function(page) {
+    var transform = function(doc) {
+      doc._page = page ;
+      return doc;
+    }
+
+    var self = this;
+
+    var observer = Personas.find({$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},{
+                  fields  : {last:1, first:1},
+                  skip    : 12*(page-1),
+                  limit   : 12,
+                  sort    : {last:1, first:1},
+      }).observe({
+      added: function (document) {
+        self.added('personas', document._id, transform(document));
+      },
+      changed: function (newDocument, oldDocument) {
+        self.changed('personas', newDocument._id, transform(newDocument));
+      },
+      removed: function (oldDocument) {
+        self.removed('personas', oldDocument._id);
+      }
+    });
+
+    self.onStop(function () {
+      observer.stop();
+    });
+
+    self.ready();
+
+  });
+
   Meteor.methods({
     pagedPersonas: function(page) {
         console.log("pagedPersonas("+page+") called from client.") ;
         var pp = Personas.find({},{
                   skip    : 30*(page-1),
                   limit   : 30,
-                  sort    : {last:1, first:1}, 
+                  sort    : {last:1, first:1},
                }).fetch() ;
         console.log("returning "+pp.length+" documents.") ;
         return pp ;

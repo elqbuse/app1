@@ -4,7 +4,7 @@ Router.route('/personas/:page', {
   waitOn: function () {
     // alert ("Page = "+this.params.page) ;
     // return Meteor.subscribe('allPersonas') ;
-    return Meteor.subscribe('gridPersonas', this.params.page) ;
+    return Meteor.subscribe('gridPersonas2', this.params.page) ;
   },
 });
 
@@ -32,10 +32,10 @@ if (Meteor.isClient) {
       loadPage: function(page) {
         var self=this ;
         console.log("Calling....  page="+page) ;
-        var result = Personas.find({},{
+        var result = Personas.find({_page:""+page},{
                   // skip    : 10*(page-1),
                   // limit   : 10,
-                  sort    : {last:1, first:1}, 
+                  sort    : {last:1, first:1},
                   // sort    : {_id:-1},
                   reactive: true,
                  }).fetch() ;
@@ -54,7 +54,7 @@ if (Meteor.isClient) {
         return Personas.find({},{
                   skip    : 10*(this.page()-1),
                   limit   : 10,
-                  sort    : {last:1, first:1}, 
+                  sort    : {last:1, first:1},
                   reactive: false}).fetch() ;
       },
     },
@@ -68,7 +68,7 @@ if (Meteor.isClient) {
   //    }
   }, ["last", "first"]);
 
-  
+
 // ============================================================================
 
 } // endif (Meteor.isClient)
