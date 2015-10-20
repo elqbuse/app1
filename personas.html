@@ -1,5 +1,5 @@
 
-<template name="personas">
+<template name="personas_DISABLED">
   <h2>Personas - [<span data-bind="text:page"></span>]</h2>
   <hr>
   <input type="button" value="&lt;" data-bind="click:evt_prevPage">
@@ -16,7 +16,35 @@
   </tbody></table>
 </template>
 
+<template name="personas">
+  <h2>Personas - [<span data-bind="text:page"></span>]</h2>
+  <a href="/tickets">tickets</a>
+  <hr>
+  <input type="button" value="&lt;" data-bind="click:evt_prevPage">
+  <input type="button" value="&gt;" data-bind="click:evt_nextPage">
+  <table class="table table-hover table-condensed"><thead>
+    <tr>
+      <th>Last</th>
+      <th>First</th>
+    </tr>
+  </thead><tbody>
+  {{#each rs_gridPersonas}}
+  <tr>
+    <td>{{last}}</td>
+    <td>{{first}}</td>
+  </tr>
+  {{/each}}
+  </tbody></table>
+</template>
+
 <template name="personas_row">
+  <tr>
+    <td>{{last}}</td>
+    <td>{{first}}</td>
+  </tr>
+</template>
+
+<template name="personas_row_DISABLED">
   <tr>
     <td data-bind="text:last"></td>
     <td data-bind="text:first"></td>

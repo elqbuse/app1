@@ -34,12 +34,21 @@ if (Meteor.isServer) {
     return Personas.find(); // insecure!
   });
   
+  Meteor.publish("gridPersonas", function (page) {
+    return Personas.find({$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},{
+                  fields  : {'last':1},
+                  skip    : 15*(page-1),
+                  limit   : 15,
+                  sort    : {last:1, first:1}, 
+               });
+  });
+  
   Meteor.methods({
     pagedPersonas: function(page) {
         console.log("pagedPersonas("+page+") called from client.") ;
         var pp = Personas.find({},{
-                  skip    : 10*(page-1),
-                  limit   : 10,
+                  skip    : 30*(page-1),
+                  limit   : 30,
                   sort    : {last:1, first:1}, 
                }).fetch() ;
         console.log("returning "+pp.length+" documents.") ;

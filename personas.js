@@ -3,7 +3,8 @@ Router.route('/personas/:page', {
   template: 'personas',
   waitOn: function () {
     // alert ("Page = "+this.params.page) ;
-    return Meteor.subscribe('allPersonas') ;
+    // return Meteor.subscribe('allPersonas') ;
+    return Meteor.subscribe('gridPersonas', this.params.page) ;
   },
 });
 
@@ -19,7 +20,7 @@ if (Meteor.isClient) {
       autorun:  function () { this.loadPage(1*Router.current().params.page) ; },
       rs_gridPersonas: [],
       page: 0,
-      loadPage: function(page) {
+      XXX_loadPage: function(page) {
         var self=this ;
         console.log("Calling....  page="+page) ;
         Meteor.call('pagedPersonas', page, function(error, result){
@@ -27,6 +28,20 @@ if (Meteor.isClient) {
           self.page(page) ;
           self.rs_gridPersonas(result) ;
         }) ;
+      },
+      loadPage: function(page) {
+        var self=this ;
+        console.log("Calling....  page="+page) ;
+        var result = Personas.find({},{
+                  // skip    : 10*(page-1),
+                  // limit   : 10,
+                  sort    : {last:1, first:1}, 
+                  // sort    : {_id:-1},
+                  reactive: true,
+                 }).fetch() ;
+        console.log("Returned " + result.length + " documents.");
+        self.page(page) ;
+        self.rs_gridPersonas(result) ;
       },
       evt_nextPage: function(event) {
         // this.loadPage(this.page()+1) ;
@@ -51,7 +66,7 @@ if (Meteor.isClient) {
   //    evt_personaSelect: function(event) {
   //      Router.go("/persona/"+this._id()) ;
   //    }
-  });
+  }, ["last", "first"]);
 
   
 // ============================================================================
