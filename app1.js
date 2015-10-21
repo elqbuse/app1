@@ -2,6 +2,8 @@ Tickets = new Mongo.Collection('tickets');
 
 Personas = new Mongo.Collection('personas');
 
+Reclamos = new Mongo.Collection('reclamos');
+
 Tickets.allow({
   insert: function (userId, document) {
     return true;
@@ -34,19 +36,22 @@ if (Meteor.isServer) {
     return Personas.find(); // insecure!
   });
 
-  function PagedPublishFactory(config) {
+  function PagedPubFactory(config) {
 
     return function(page, filter, options) {     // TO-DO: merge per-call filter & options
-    
-      var METEOR_COLLECTION = config.collection ;
-      var MONGO_COLLECTION  = METEOR_COLLECTION._name ;
-      var PAGE_SIZE         = config.pagesize ;
-      var QUERY_FILTER      = config.filter || {} ;
-      var QUERY_OPTIONS     = config.options || {} ;
-      
-      QUERY_OPTIONS.limit   = PAGE_SIZE ;
-      QUERY_OPTIONS.skip    = PAGE_SIZE*(page-1) ;
-        
+      check(page, Number) ;
+      (filter===undefined)  || check(filter, Object) ;
+      (options===undefined) || check(options, Object) ;
+
+      var meteor_collection = config.collection ;
+      var mongo_collection  = meteor_collection._name ;
+      var page_size         = config.pagesize ;
+      var query_filter      = config.filter || {} ;
+      var query_options     = config.options || {} ;
+
+      query_options.limit   = page_size ;
+      query_options.skip    = page_size*(page-1) ;
+
       var transform = function(doc) {
         doc._page = page ;
         return doc;
@@ -54,15 +59,15 @@ if (Meteor.isServer) {
 
       var self = this;
 
-      var observer = METEOR_COLLECTION.find(QUERY_FILTER,QUERY_OPTIONS).observe({
+      var observer = meteor_collection.find(query_filter,query_options).observe({
         added: function (document) {
-          self.added(MONGO_COLLECTION, document._id, transform(document));
+          self.added(mongo_collection, document._id, transform(document));
         },
         changed: function (newDocument, oldDocument) {
-          self.changed(MONGO_COLLECTION, newDocument._id, transform(newDocument));
+          self.changed(mongo_collection, newDocument._id, transform(newDocument));
         },
         removed: function (oldDocument) {
-          self.removed(MONGO_COLLECTION, oldDocument._id);
+          self.removed(mongo_collection, oldDocument._id);
         }
       });
 
@@ -75,13 +80,21 @@ if (Meteor.isServer) {
     };
   }
 
-  Meteor.publish("gridPersonas", PagedPublishFactory({
+  Meteor.publish("gridPersonas", PagedPubFactory({
     collection : Personas,
     pagesize   : 12,
-    filter     : {$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]}, 
+    filter     : {$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},
     options    : {fields:{last:1, first:1}, sort: {last:1, first:1}},
   }));
 
+  Meteor.publish("gridReclamos", PagedPubFactory({
+    collection : Reclamos,
+    pagesize   : 12,
+    filter     : {},
+    options    : {fields:{nro:1, tipo:1}, sort: {nro:-1}},
+  }));
+
+/*
   Meteor.methods({
     pagedPersonas: function(page) {
         console.log("pagedPersonas("+page+") called from client.") ;
@@ -94,6 +107,8 @@ if (Meteor.isServer) {
         return pp ;
     }
   }) ;
+*/
+
 }
 
 Router.configure({

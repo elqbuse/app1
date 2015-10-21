@@ -4,6 +4,7 @@ Router.route('/personas/:page', {
   waitOn: function () {
     // alert ("Page = "+this.params.page) ;
     // return Meteor.subscribe('allPersonas') ;
+    this.params.page = Math.max(1, this.params.page) ;
     return Meteor.subscribe('gridPersonas', this.params.page) ;
   },
 });
@@ -32,7 +33,7 @@ if (Meteor.isClient) {
       loadPage: function(page) {
         var self=this ;
         console.log("Calling....  page="+page) ;
-        var result = Personas.find({_page:""+page},{
+        var result = Personas.find({_page:page},{
                   // skip    : 10*(page-1),
                   // limit   : 10,
                   sort    : {last:1, first:1},
@@ -62,12 +63,13 @@ if (Meteor.isClient) {
   );
 
 
-  Template.personas_row.viewmodel({
+/*
+  Template.personas_row.viewmodel({    // empty but needed
   //    evt_personaSelect: function(event) {
   //      Router.go("/persona/"+this._id()) ;
   //    }
   }, ["last", "first"]);
-
+*/
 
 // ============================================================================
 

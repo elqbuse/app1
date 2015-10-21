@@ -26,3 +26,4 @@ iron:router@1.0.9
 twbs:bootstrap
 manuel:viewmodel
 manuel:viewmodel-explorer  # development-only  (Ctrl-Shift-E)
+check
