@@ -34,47 +34,53 @@ if (Meteor.isServer) {
     return Personas.find(); // insecure!
   });
 
-  Meteor.publish("gridPersonas", function (page) {
-    return Personas.find({$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},{
-                  fields  : {'last':1},
-                  skip    : 10*(page-1),
-                  limit   : 10,
-                  sort    : {last:1, first:1},
-               });
-  });
+  function PagedPublishFactory(config) {
 
-  Meteor.publish("gridPersonas2", function(page) {
-    var transform = function(doc) {
-      doc._page = page ;
-      return doc;
-    }
-
-    var self = this;
-
-    var observer = Personas.find({$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},{
-                  fields  : {last:1, first:1},
-                  skip    : 12*(page-1),
-                  limit   : 12,
-                  sort    : {last:1, first:1},
-      }).observe({
-      added: function (document) {
-        self.added('personas', document._id, transform(document));
-      },
-      changed: function (newDocument, oldDocument) {
-        self.changed('personas', newDocument._id, transform(newDocument));
-      },
-      removed: function (oldDocument) {
-        self.removed('personas', oldDocument._id);
+    return function(page, filter, options) {     // TO-DO: merge per-call filter & options
+    
+      var METEOR_COLLECTION = config.collection ;
+      var MONGO_COLLECTION  = METEOR_COLLECTION._name ;
+      var PAGE_SIZE         = config.pagesize ;
+      var QUERY_FILTER      = config.filter || {} ;
+      var QUERY_OPTIONS     = config.options || {} ;
+      
+      QUERY_OPTIONS.limit   = PAGE_SIZE ;
+      QUERY_OPTIONS.skip    = PAGE_SIZE*(page-1) ;
+        
+      var transform = function(doc) {
+        doc._page = page ;
+        return doc;
       }
-    });
 
-    self.onStop(function () {
-      observer.stop();
-    });
+      var self = this;
 
-    self.ready();
+      var observer = METEOR_COLLECTION.find(QUERY_FILTER,QUERY_OPTIONS).observe({
+        added: function (document) {
+          self.added(MONGO_COLLECTION, document._id, transform(document));
+        },
+        changed: function (newDocument, oldDocument) {
+          self.changed(MONGO_COLLECTION, newDocument._id, transform(newDocument));
+        },
+        removed: function (oldDocument) {
+          self.removed(MONGO_COLLECTION, oldDocument._id);
+        }
+      });
 
-  });
+      self.onStop(function () {
+        observer.stop();
+      });
+
+      self.ready();
+
+    };
+  }
+
+  Meteor.publish("gridPersonas", PagedPublishFactory({
+    collection : Personas,
+    pagesize   : 12,
+    filter     : {$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]}, 
+    options    : {fields:{last:1, first:1}, sort: {last:1, first:1}},
+  }));
 
   Meteor.methods({
     pagedPersonas: function(page) {

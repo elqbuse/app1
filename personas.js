@@ -4,7 +4,7 @@ Router.route('/personas/:page', {
   waitOn: function () {
     // alert ("Page = "+this.params.page) ;
     // return Meteor.subscribe('allPersonas') ;
-    return Meteor.subscribe('gridPersonas2', this.params.page) ;
+    return Meteor.subscribe('gridPersonas', this.params.page) ;
   },
 });
 
