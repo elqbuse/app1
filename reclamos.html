@@ -1,6 +1,6 @@
 
 <template name="reclamos">
-  <h2>Reclamos - [<span data-bind="text:gridPage"></span>]</h2>
+  <h2>Reclamos - [<span data-bind="text:gridState.page"></span>]</h2>
   <a href="/tickets">tickets</a>
   <hr>
   <input type="button" value="&lt;" data-bind="click:evt_prevPage">
@@ -11,10 +11,14 @@
       <th>Tipo</th>
     </tr>
   </thead><tbody>
-  {{#each rs_gridReclamos}}
+  {{#each gridRowset}}
   <tr>
     <td>{{nro}}</td>
     <td>{{tipo}}</td>
+  </tr>
+  {{else}}
+  <tr>
+    <td colspan=2>Cargando...</td>
   </tr>
   {{/each}}
   </tbody></table>

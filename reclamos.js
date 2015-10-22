@@ -1,63 +1,67 @@
 
 Router.route('/reclamos', {
-  action:  function() { Router.go("/reclamos/1"); }
-});
-
-Router.route('/reclamos/:page', {
   template: 'reclamos',
 });
 
 // ============================================================================
+if (Meteor.isServer) {
 
-if (Meteor.isClient) {
+}; // endif (Meteor.isServer)
 
 // ============================================================================
+if (Meteor.isClient) {
 
   Template.reclamos.viewmodel(
     // viewstate properties
     {
-      autorun: function () { 
-        console.log("autorun() - START") ;
-        // avoid using self.xxx() as getter !!! (reactive)
-        this.gridPage(Math.max(1, Router.current().params.page)) ;
-        this.gridOrder({nro:-1}) ;
-        this.gridLoad() ;
-        console.log("autorun() - end") ;
+      gridConfig: {
+        publication: 'gridReclamos',
+        sort:{nro:1},
+        filter:{tipo:"O"},
       },
-      
-      gridLoad: function () {
-        console.log("gridLoad() - start") ;
-        
-        var self=this ;
-        
-        Meteor.subscribe('gridReclamos', this.gridPage(), function(){
-          console.log("gridLoad() - sub.ready") ;
+
+      gridRowset: [],
+      gridState: {},
+
+      autorun: function () {
+        var gridBaseline = {
+          page:1,
+          filter:{},
+          sort:{}
+        } ;
+        this.gridState(_.extend(gridBaseline, this.gridConfig())) ;
+
+        _.debounce(this.gridLoad, 1).bind(this)();  // break reactivity
+      },
+
+      gridLoad: function (gs) {
+        gs = gs || this.gridState() ;
+        this.gridState(_.clone(gs)) ;
+
+        var query_filter = gs.filter ;
+        var query_options = {sort:gs.sort} ;
+
+        var self = this ;
+        Meteor.subscribe(gs.publication, gs.page, query_filter, query_options, function(){
           var result = Reclamos.find(
-            {_page:self.gridPage()},
-            {sort :self.gridOrder()}
+            {_page:gs.page}, {sort :gs.order}
           ).fetch() ;
-          self.rs_gridReclamos(result) ;
-          console.log("gridLoad() - rs.loaded") ;
+          self.gridRowset(result) ;
         }) ;
-        console.log("gridLoad() - end") ;
       },
-      
-      gridPage: 0,
-      gridOrder: {},
-      rs_gridReclamos: [],
-      
+
       evt_nextPage: function(event) {
-        //Router.go("/reclamos/"+(this.gridPage()+1)) ;
-        console.log("evt_nextPage() - gridPage++") ;
-        this.gridPage(this.gridPage()+1);
+        var gs = this.gridState() ;
+        gs.page = gs.page + 1 ;
+        this.gridLoad(gs);
       },
       evt_prevPage: function(event) {
-        //Router.go("/reclamos/"+(this.gridPage()-1)) ;
-        console.log("evt_prevPage() - gridPage--") ;
-        this.gridPage(this.gridPage()-1);
+        var gs = this.gridState() ;
+        gs.page = gs.page==1 ? 1 : gs.page - 1 ;
+        this.gridLoad(gs);
       },
     },
-    [ "rs_gridReclamos" ]  // exported helpers
+    [ "gridRowset" ]  // exported helpers
   );
 
 // ============================================================================
