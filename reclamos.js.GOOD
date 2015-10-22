@@ -1,0 +1,48 @@
+
+Router.route('/reclamos', {
+  action:  function() { Router.go("/reclamos/1"); }
+});
+
+Router.route('/reclamos/:page', {
+  template: 'reclamos',
+});
+
+// ============================================================================
+
+if (Meteor.isClient) {
+
+// ============================================================================
+
+  Template.reclamos.viewmodel(
+    // viewstate properties
+    {
+      autorun:  function () { 
+        var page = Math.max(1, Router.current().params.page) ;
+        this.page(page) ; // avoid using self.page() as getter !!! (reactive)
+        
+        var self=this ;
+        var options = {sort    : {nro:-1}} ;
+        
+        Meteor.subscribe('gridReclamos', page, function(){
+          var result = Reclamos.find({_page:page},options).fetch() ;
+          self.rs_gridReclamos(result) ;
+        }) ;
+      },
+      
+      page: 0,
+      rs_gridReclamos: [],
+      
+      evt_nextPage: function(event) {
+        // this.loadPage(this.page()+1) ;
+        Router.go("/reclamos/"+(this.page()+1)) ;
+      },
+      evt_prevPage: function(event) {
+        Router.go("/reclamos/"+(this.page()-1)) ;
+      },
+    },
+    [ "rs_gridReclamos" ]  // exported helpers
+  );
+
+// ============================================================================
+
+} // endif (Meteor.isClient)

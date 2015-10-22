@@ -1,15 +1,10 @@
 
 Router.route('/reclamos', {
-  action:  function() {
-    Router.go("/reclamos/1");
-  },
+  action:  function() { Router.go("/reclamos/1"); }
 });
 
 Router.route('/reclamos/:page', {
   template: 'reclamos',
-  waitOn: function () {
-    return Meteor.subscribe('gridReclamos', Math.max(1, this.params.page)) ;
-  },
 });
 
 // ============================================================================
@@ -21,25 +16,45 @@ if (Meteor.isClient) {
   Template.reclamos.viewmodel(
     // viewstate properties
     {
-      autorun:  function () { this.loadPage(1*Router.current().params.page) ; },
-      rs_gridReclamos: [],
-      page: 0,
-      loadPage: function(page) {
-        var self=this ;
-        console.log("Calling....  page="+page) ;
-        var result = Reclamos.find({_page:page},{
-                  sort    : {last:1, first:1},
-                 }).fetch() ;
-        console.log("Returned " + result.length + " documents.");
-        self.page(page) ;
-        self.rs_gridReclamos(result) ;
+      autorun: function () { 
+        console.log("autorun() - START") ;
+        // avoid using self.xxx() as getter !!! (reactive)
+        this.gridPage(Math.max(1, Router.current().params.page)) ;
+        this.gridOrder({nro:-1}) ;
+        this.gridLoad() ;
+        console.log("autorun() - end") ;
       },
+      
+      gridLoad: function () {
+        console.log("gridLoad() - start") ;
+        
+        var self=this ;
+        
+        Meteor.subscribe('gridReclamos', this.gridPage(), function(){
+          console.log("gridLoad() - sub.ready") ;
+          var result = Reclamos.find(
+            {_page:self.gridPage()},
+            {sort :self.gridOrder()}
+          ).fetch() ;
+          self.rs_gridReclamos(result) ;
+          console.log("gridLoad() - rs.loaded") ;
+        }) ;
+        console.log("gridLoad() - end") ;
+      },
+      
+      gridPage: 0,
+      gridOrder: {},
+      rs_gridReclamos: [],
+      
       evt_nextPage: function(event) {
-        // this.loadPage(this.page()+1) ;
-        Router.go("/reclamos/"+(this.page()+1)) ;
+        //Router.go("/reclamos/"+(this.gridPage()+1)) ;
+        console.log("evt_nextPage() - gridPage++") ;
+        this.gridPage(this.gridPage()+1);
       },
       evt_prevPage: function(event) {
-        Router.go("/reclamos/"+(this.page()-1)) ;
+        //Router.go("/reclamos/"+(this.gridPage()-1)) ;
+        console.log("evt_prevPage() - gridPage--") ;
+        this.gridPage(this.gridPage()-1);
       },
     },
     [ "rs_gridReclamos" ]  // exported helpers
