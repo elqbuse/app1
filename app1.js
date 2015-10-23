@@ -36,18 +36,11 @@ if (Meteor.isServer) {
     return Personas.find(); // insecure!
   });
 
-  Meteor.publish("gridPersonas", MyGrid.pagedPubFactory({
+  Meteor.publish("gridPersonas", MyGrid.publication({
     collection : Personas,
     pagesize   : 12,
     filter     : {$or:[{last:{$regex:/U/}},{first:{$regex:/U/}}]},
     options    : {fields:{last:1, first:1}, sort: {last:1, first:1}},
-  }));
-
-  Meteor.publish("gridReclamos", MyGrid.pagedPubFactory({
-    collection : Reclamos,
-    pagesize   : 25,
-    filter     : {},
-    options    : {fields:{nro:1, tipo:1}, sort: {nro:-1}},
   }));
 
 /*
