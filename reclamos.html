@@ -1,20 +1,26 @@
 
 <template name="reclamos">
-  <h2>Reclamos - [<span data-bind="text:gridState.page"></span>]</h2>
+  <h2>Reclamos</h2>
   <a href="/tickets">tickets</a>
   <hr>
+  <input type="button" value="&lt;&lt;" data-bind="click:evt_prev10Page">
   <input type="button" value="&lt;" data-bind="click:evt_prevPage">
+  <span data-bind="text:gridPage"></span>
   <input type="button" value="&gt;" data-bind="click:evt_nextPage">
+  <input type="button" value="&gt;&gt;" data-bind="click:evt_next10Page">
+
   <table class="table table-hover table-condensed"><thead>
     <tr>
       <th>Nro</th>
       <th>Tipo</th>
+      <th>Nota</th>
     </tr>
   </thead><tbody>
-  {{#each gridRowsHelper}}
+  {{#each gridRows}}
   <tr>
     <td>{{nro}}</td>
     <td>{{tipo}}</td>
+    <td>{{notas.[0].texto}}</td>
   </tr>
   {{else}}
   <tr>

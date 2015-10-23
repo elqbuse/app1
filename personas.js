@@ -1,3 +1,9 @@
+Router.route('/personas', {
+  action: function () {
+    Router.go('/personas/1') ;
+  },
+});
+
 
 Router.route('/personas/:page', {
   template: 'personas',
